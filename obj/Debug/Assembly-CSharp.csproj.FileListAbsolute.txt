@@ -6,7 +6,6 @@ E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.Analytics.dll
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.dll
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.HoloLens.dll
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.Networking.dll
-E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.PlaymodeTestsRunner.dll
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.UI.dll
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.VR.dll
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\Unity.SerializationLogic.dll
@@ -20,10 +19,14 @@ E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.xml
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEditor.xml
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.UI.xml
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.Networking.xml
-E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.PlaymodeTestsRunner.xml
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.Analytics.xml
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.HoloLens.xml
 E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.VR.xml
 E:\Repos\Unity Stuff\Dungeon Strike\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
 E:\Repos\Unity Stuff\Dungeon Strike\obj\Debug\Assembly-CSharp.dll
 E:\Repos\Unity Stuff\Dungeon Strike\obj\Debug\Assembly-CSharp.pdb
+E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\nunit.framework.dll
+E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.TestRunner.dll
+E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\Assembly-CSharp-firstpass.pdb
+E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\UnityEngine.TestRunner.xml
+E:\Repos\Unity Stuff\Dungeon Strike\Temp\bin\Debug\nunit.framework.xml
