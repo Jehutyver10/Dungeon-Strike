@@ -2,25 +2,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class CameraFollow : MonoBehaviour {
 
-	public CueController player;
+	public PlayerController player;
 	public Vector3 startDistance;
-	GameObject target;
+	public float resetTime;
+	public bool resetting;
+
 	// Use this for initialization
 	void Start () {
-		target = player.target;
-		startDistance = transform.position - target.transform.position;
+		startDistance = transform.position - player.transform.position;
 
 		
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		
+	void FixedUpdate () {
+		if (resetting) {
+			transform.position = Vector3.Lerp (transform.position, player.transform.position + startDistance, 1 / (resetTime));
+		}
 	}
 
-	public void CamReset(){
-		transform.position = Vector3.Lerp (transform.position, target.transform.position + startDistance, 1/(player.resetTime * 5f));
-	}
 }

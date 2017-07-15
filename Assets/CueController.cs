@@ -27,7 +27,7 @@ public class CueController : MonoBehaviour {
 		xOrbit = Input.GetAxis ("Horizontal");
 		if (resetting) {
 			transform.position = Vector3.Lerp (transform.position, target.transform.position + startDistance, resetTime * Time.deltaTime);
-			cam.CamReset ();
+
 
 		}
 		FullReset ();
