@@ -1,16 +1,21 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 [RequireComponent(typeof(Health))]
 public class PlayerController : Character {
 	private Vector3 startDrag, endDrag;
 	Rigidbody rb;
 	GameManager gm;
 	CameraFollow cam;
+	public string usedItem;
+	public enum PlayerClass {Fighter, Wizard, Rogue};
+	public PlayerClass playerClass;
+	public GameObject axePrefab;
 
-	public float strengthBuffer, rayLength;
-	public int speed;	
-
+	public float strengthBuffer = .01f, rayLength, attackStrength = 1, throwBuffer = .02f;
+	public int speed, gold;
+	public List <string> inventory;
 
 
 	// Use this for initialization
@@ -19,7 +24,7 @@ public class PlayerController : Character {
 		gm = FindObjectOfType<GameManager> ();
 		speed = Mathf.RoundToInt(rb.velocity.magnitude);
 		cam = FindObjectOfType<CameraFollow> ();
-
+		inventory = new List<string> ();
 
 
 	}
@@ -38,7 +43,6 @@ public class PlayerController : Character {
 		if (!inPlay && isMyTurn) {
 			print ("Player's turn");
 
-			cam.resetting = false;
 			startDrag = Input.mousePosition;
 		}
 
@@ -47,14 +51,32 @@ public class PlayerController : Character {
 	public void EndDrag(){
 		if (!inPlay && isMyTurn) {
 			endDrag = Input.mousePosition;
-			Launch ();
+			if (usedItem == "Axe") {
+				Throw ();
+			} else {
+				Launch ();
+			}
 		}
 
 	}
 	void Launch(){
-		float magnitude = Vector3.Magnitude (endDrag - startDrag);
-		this.rb.AddForce(cam.transform.forward *magnitude * strengthBuffer, ForceMode.Impulse);
+		if (usedItem == "Sword") {
+			GetComponent<Fighter> ().Sword ();
+		}
+		Vector3 magnitude = new Vector3 (endDrag.x - startDrag.x, 0, endDrag.y-startDrag.y);
+		this.rb.AddForce(magnitude * strengthBuffer, ForceMode.Impulse);
 		inPlay = true;
+		StartCoroutine ("LaunchDelay");
+
+	}
+
+	void Throw(){
+		Vector3 magnitude = new Vector3 (endDrag.x - startDrag.x, 0, endDrag.y-startDrag.y);
+		GameObject axe = Instantiate (axePrefab);
+		axe.transform.position = transform.position;
+		axe.transform.parent = transform;
+	
+		axe.GetComponent<Rigidbody> ().AddForce (magnitude * throwBuffer, ForceMode.Impulse);
 		StartCoroutine ("LaunchDelay");
 
 	}
@@ -65,12 +87,58 @@ public class PlayerController : Character {
 			yield return null;
 		}
 		inPlay = false;
-		cam.resetting = true;
 
 		yield return new WaitForSeconds (cam.resetTime /2f);
+		ActivateItems ();
 
 		gm.EndTurn ();
 
+	}
+
+	public void UseItem(string itemName){ //readies item to be used
+		if (itemName == "Shield") {
+			GetComponent<Fighter> ().item = Fighter.Item.Shield;
+
+		} else if (itemName == "Axe") {
+			GetComponent<Fighter> ().item = Fighter.Item.Axe;
+		} else if (itemName == "Sword") {
+			GetComponent<Fighter> ().item = Fighter.Item.Axe;
+		}
+		usedItem = itemName;
+		
+	}
+
+	public void RemoveItem(string itemName){
+		if (GetComponent<Fighter> ()) {
+			GetComponent<Fighter> ().item = Fighter.Item.none;
+		}
+	}
+	public void ActivateItems(){
+		//use the item 
+		if (GetComponent<Fighter> () && GetComponent<Fighter>().item == Fighter.Item.Sword) {
+			GetComponent<Fighter> ().Invoke (usedItem, 0);
+		}
+		inventory.Remove (usedItem);
+		usedItem = null;
+
+		//revert the button to normal
+		gm.AdjustButtons();
+
+	}
+
+	public void ClearItem(){
+		if(GetComponent<Fighter>()){
+			GetComponent<Fighter>().ResetStats();
+		}
+	}
+	void OnCollisionEnter(Collision col){
+		if (isMyTurn) {
+			if (col.gameObject.GetComponent<Enemy> ()) {
+				GetComponent<AudioSource> ().Play ();
+				GetComponent<AudioSource> ().time = .25f;
+				col.gameObject.GetComponent<Health> ().TakeDamage (col.impulse.magnitude * attackStrength);
+			}
+		}
 	}
 	//
 
