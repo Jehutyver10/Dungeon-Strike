@@ -10,7 +10,9 @@ public class PlayerController : Character {
 	CameraFollow cam;
 	public string usedItem;
 	public enum PlayerClass {Fighter, Wizard, Rogue};
+	public enum PlayerState {Unselected, Selected, Charging};
 	public PlayerClass playerClass;
+	public PlayerState playerState;
 	public GameObject axePrefab;
 
 	public float strengthBuffer = .01f, rayLength, attackStrength = 1, throwBuffer = .02f;
@@ -39,25 +41,42 @@ public class PlayerController : Character {
 
 	}
 
-	public void StartDrag(){
-		if (!inPlay && isMyTurn) {
-			print ("Player's turn");
-
-			startDrag = Input.mousePosition;
-		}
-
+	void OnMouseDown(){
+		GetStartPosition ();
 	}
 
-	public void EndDrag(){
-		if (!inPlay && isMyTurn) {
-			endDrag = Input.mousePosition;
-			if (usedItem == "Axe") {
-				Throw ();
-			} else {
-				Launch ();
+	public void GetStartPosition(){
+		if (playerState == PlayerState.Unselected) {
+			print ("starting drag");
+			if (!inPlay && isMyTurn) {
+				print ("Player's turn");
+
+				startDrag = Input.mousePosition;
+				Invoke ("Select", .1f);
+
 			}
 		}
+	}
 
+	void Select(){
+		playerState = PlayerState.Selected;
+		
+	}
+
+	public void GetEndPosition(){
+		if (playerState == PlayerState.Selected) {
+			print ("ending drag");
+
+			if (!inPlay && isMyTurn) {
+				endDrag = Input.mousePosition;
+				if (usedItem == "Axe") {
+					Throw ();
+				} else {
+					Launch ();
+				}
+				playerState = PlayerState.Unselected;
+			}
+		}
 	}
 	void Launch(){
 		if (usedItem == "Sword") {
