@@ -9,6 +9,8 @@ public class PlayerController : Character {
 	GameManager gm;
 	CameraFollow cam;
 	public string usedItem;
+	public GameObject selector, shotGuide;
+
 	public enum PlayerClass {Fighter, Wizard, Rogue};
 	public enum PlayerState {Unselected, Selected, Charging};
 	public PlayerClass playerClass;
@@ -22,6 +24,7 @@ public class PlayerController : Character {
 
 	// Use this for initialization
 	void Start () {
+		
 		rb = GetComponent<Rigidbody> ();
 		gm = FindObjectOfType<GameManager> ();
 		speed = Mathf.RoundToInt(rb.velocity.magnitude);
@@ -46,30 +49,50 @@ public class PlayerController : Character {
 	}
 
 	public void GetStartPosition(){
-		if (playerState == PlayerState.Unselected) {
+		if (playerState == PlayerState.Unselected && isMyTurn) {
 			print ("starting drag");
 			if (!inPlay && isMyTurn) {
 				print ("Player's turn");
 
 				startDrag = Input.mousePosition;
-				Invoke ("Select", .1f);
+				StartCoroutine ("Select");
 
 			}
 		}
 	}
 
-	void Select(){
+	IEnumerator Select(){
+		selector.SetActive (true);
+		shotGuide.SetActive (true);
+		Material mat = selector.GetComponent<Renderer> ().material;
+		float colorAdjustment = 0;
+		while (colorAdjustment <= 1f) {
+			mat.SetColor ("_EmissionColor", Color.white * colorAdjustment);
+			colorAdjustment = colorAdjustment + Time.deltaTime *10;
+			yield return null;
+		}
+		yield return new WaitForSeconds (.1f);
 		playerState = PlayerState.Selected;
-		
+
+
 	}
 
 	public void GetEndPosition(){
 		if (playerState == PlayerState.Selected) {
+			StartCoroutine ("Charge");
+			endDrag = Input.mousePosition;
+
+
+		}
+		else if (playerState == PlayerState.Charging) {
 			print ("ending drag");
 
-			if (!inPlay && isMyTurn) {
-				endDrag = Input.mousePosition;
-				if (usedItem == "Axe") {
+			if (!inPlay && isMyTurn) {//actually executing the attack
+				selector.GetComponent<Renderer> ().material.SetColor ("_EmissionColor", Color.black);
+				selector.SetActive (false);
+				shotGuide.SetActive (false);
+
+				if (usedItem == "Axe") {			
 					Throw ();
 				} else {
 					Launch ();
@@ -78,12 +101,32 @@ public class PlayerController : Character {
 			}
 		}
 	}
-	void Launch(){
+
+	IEnumerator Charge(){
+		yield return new WaitForSeconds (.1f);
+		playerState = PlayerState.Charging;
+		print ("charging up");
+		Material mat = shotGuide.GetComponent<Renderer> ().material;
+		mat.SetColor ("_EmissionColor", Color.black);
+		float chargeTime = 3;
+		while (playerState == PlayerState.Charging){
+			mat.SetColor("_EmissionColor", Color.Lerp (shotGuide.GetComponent<ShotGuide> ().colors [0], shotGuide.GetComponent<ShotGuide> ().colors [1], Mathf.PingPong (Time.time / chargeTime, 1)));
+			strengthBuffer = Mathf.PingPong (Time.time/chargeTime, 1) * 50;
+			yield return null;
+		}
+
+		mat.SetColor ("_EmissionColor", Color.white);
+
+		//over a short period of time, lerp the color from start color to red to white then back again
+		//if the player clicks before it reaches the start color again, retur
+	}
+	void Launch(float strength = 1){
 		if (usedItem == "Sword") {
 			GetComponent<Fighter> ().Sword ();
 		}
 		Vector3 magnitude = new Vector3 (endDrag.x - startDrag.x, 0, endDrag.y-startDrag.y);
-		this.rb.AddForce(magnitude * strengthBuffer, ForceMode.Impulse);
+		this.rb.AddForce(magnitude.normalized * strengthBuffer, ForceMode.Impulse);
+
 		inPlay = true;
 		StartCoroutine ("LaunchDelay");
 
@@ -95,7 +138,8 @@ public class PlayerController : Character {
 		axe.transform.position = transform.position;
 		axe.transform.parent = transform;
 	
-		axe.GetComponent<Rigidbody> ().AddForce (magnitude * throwBuffer, ForceMode.Impulse);
+		axe.GetComponent<Rigidbody> ().AddForce (magnitude.normalized * throwBuffer, ForceMode.Impulse);
+	
 		StartCoroutine ("LaunchDelay");
 
 	}
@@ -151,6 +195,7 @@ public class PlayerController : Character {
 		}
 	}
 	void OnCollisionEnter(Collision col){
+		print (col.impulse);
 		if (isMyTurn) {
 			if (col.gameObject.GetComponent<Enemy> ()) {
 				GetComponent<AudioSource> ().Play ();
