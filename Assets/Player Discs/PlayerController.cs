@@ -85,7 +85,6 @@ public class PlayerController : Character {
 
 		}
 		else if (playerState == PlayerState.Charging) {
-			print ("ending drag");
 
 			if (!inPlay && isMyTurn) {//actually executing the attack
 				selector.GetComponent<Renderer> ().material.SetColor ("_EmissionColor", Color.black);
@@ -195,7 +194,6 @@ public class PlayerController : Character {
 		}
 	}
 	void OnCollisionEnter(Collision col){
-		print (col.impulse);
 		if (isMyTurn) {
 			if (col.gameObject.GetComponent<Enemy> ()) {
 				GetComponent<AudioSource> ().Play ();
