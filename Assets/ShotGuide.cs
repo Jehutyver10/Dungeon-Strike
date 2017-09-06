@@ -52,7 +52,6 @@ public class ShotGuide : MonoBehaviour {
 				
 				lr.SetPosition (bounceCounter, shotRay.origin);
 				lr.SetPosition (bounceCounter + 1, lr.GetPosition(bounceCounter) + new Vector3 (shotRay.direction.x , player.transform.position.y, shotRay.direction.z ) * remainingLength);
-				print (remainingLength);
 				break;
 		
 			}

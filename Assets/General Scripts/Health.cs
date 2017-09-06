@@ -4,9 +4,11 @@ using System.Collections;
 public class Health : MonoBehaviour {
 	public float health = 1000;
 	public float maxHealth = 1000;
+	Renderer rend;
 	// Use this for initialization
 	void Start () {
-	
+		rend = GetComponent<Renderer> ();
+
 	}
 	
 	// Update is called once per frame
@@ -14,6 +16,7 @@ public class Health : MonoBehaviour {
 		if (health > maxHealth) {
 			health = maxHealth;
 		}
+		VisualizeDamage ();
 	}
 
 	public void TakeDamage(float damage, bool knockback = false){
@@ -56,5 +59,7 @@ public class Health : MonoBehaviour {
 		}
 
 	}
-
+	void VisualizeDamage(){
+		rend.material.color =  Color.Lerp (Color.red, Color.white, health / maxHealth);
+	}
 }
