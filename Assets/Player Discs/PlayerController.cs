@@ -8,16 +8,19 @@ public class PlayerController : Character {
 	Rigidbody rb;
 	GameManager gm;
 	CameraFollow cam;
+
 	public string usedItem;
 	public GameObject selector, shotGuide;
 
-	public enum PlayerClass {Fighter, Wizard, Rogue};
+    public PlayerClass myClass;
+	public enum ClassName {Fighter, Wizard, Rogue};
 	public enum PlayerState {Unselected, Selected, Charging};
-	public PlayerClass playerClass;
+	public ClassName playerClass;
 	public PlayerState playerState;
 	public GameObject axePrefab;
 
-	public float strengthBuffer = .01f, rayLength, attackStrength = 1, throwBuffer = .02f;
+	public float rayLength, attackStrength = 1, throwBuffer = .02f, launchStrength = 50, launchForce;
+	private float chargeDuration;
 	public int speed, gold;
 	public List <string> inventory;
 
@@ -101,16 +104,15 @@ public class PlayerController : Character {
 		}
 	}
 
-	IEnumerator Charge(){
+	IEnumerator Charge(float chargeTime = 3){
 		yield return new WaitForSeconds (.1f);
 		playerState = PlayerState.Charging;
 		//print ("charging up");
 		Material mat = shotGuide.GetComponent<Renderer> ().material;
 		mat.SetColor ("_EmissionColor", Color.black);
-		float chargeTime = 3;
 		while (playerState == PlayerState.Charging){
 			mat.SetColor("_EmissionColor", Color.Lerp (shotGuide.GetComponent<ShotGuide> ().colors [0], shotGuide.GetComponent<ShotGuide> ().colors [1], Mathf.PingPong (Time.time / chargeTime, 1)));
-			strengthBuffer = Mathf.PingPong (Time.time/chargeTime, 1) * 50;
+			launchForce = Mathf.PingPong (Time.time/chargeTime, 1) * launchStrength;
 			yield return null;
 			endDrag =Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -126,7 +128,7 @@ public class PlayerController : Character {
 		}
 
 		Vector3 magnitude = new Vector3 (endDrag.x - transform.position.x, 0, endDrag.z - transform.position.z);
-		this.rb.AddForce(magnitude.normalized * strengthBuffer, ForceMode.Impulse);
+		this.rb.AddForce(magnitude.normalized * launchForce, ForceMode.Impulse);
 		inPlay = true;
 		StartCoroutine ("LaunchDelay");
 

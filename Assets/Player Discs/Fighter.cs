@@ -22,7 +22,7 @@ public class Fighter: MonoBehaviour {
 		health.maxHealth = 150;
 		health.health = 150;
 		startStrength = GetComponent<PlayerController> ().attackStrength;
-		startSpeed = GetComponent<PlayerController> ().strengthBuffer;
+		startSpeed = GetComponent<PlayerController> ().launchForce;
 
 	}
 
@@ -33,7 +33,7 @@ public class Fighter: MonoBehaviour {
 
 	public void Sword(){
 		GetComponent<PlayerController> ().attackStrength = GetComponent<PlayerController> ().attackStrength * 2;
-		GetComponent<PlayerController> ().strengthBuffer = GetComponent<PlayerController> ().strengthBuffer * 4;
+		GetComponent<PlayerController> ().launchForce = GetComponent<PlayerController> ().launchForce * 4;
 	
 	}
 		
@@ -41,7 +41,7 @@ public class Fighter: MonoBehaviour {
 		rb.mass = startMass;
 		defending = false;
 		GetComponent<PlayerController> ().attackStrength = startStrength;
-		GetComponent<PlayerController> ().strengthBuffer = startSpeed;
+		GetComponent<PlayerController> ().launchForce = startSpeed;
 
 	}
 
