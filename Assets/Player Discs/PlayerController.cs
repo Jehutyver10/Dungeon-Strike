@@ -46,15 +46,16 @@ public class PlayerController : Character {
 
 	void OnMouseDown(){
 		GetStartPosition ();
+
 	}
 
 	public void GetStartPosition(){
 		if (playerState == PlayerState.Unselected && isMyTurn) {
-			print ("starting drag");
+			//print ("starting drag");
 			if (!inPlay && isMyTurn) {
-				print ("Player's turn");
+				//print ("Player's turn");
 
-				startDrag = Input.mousePosition;
+				startDrag = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, 0, Input.mousePosition.y));
 				StartCoroutine ("Select");
 
 			}
@@ -79,8 +80,7 @@ public class PlayerController : Character {
 
 	public void GetEndPosition(){
 		if (playerState == PlayerState.Selected) {
-			StartCoroutine ("Charge");
-			endDrag = Input.mousePosition;
+			StartCoroutine (Charge());
 
 
 		}
@@ -104,7 +104,7 @@ public class PlayerController : Character {
 	IEnumerator Charge(){
 		yield return new WaitForSeconds (.1f);
 		playerState = PlayerState.Charging;
-		print ("charging up");
+		//print ("charging up");
 		Material mat = shotGuide.GetComponent<Renderer> ().material;
 		mat.SetColor ("_EmissionColor", Color.black);
 		float chargeTime = 3;
@@ -112,8 +112,9 @@ public class PlayerController : Character {
 			mat.SetColor("_EmissionColor", Color.Lerp (shotGuide.GetComponent<ShotGuide> ().colors [0], shotGuide.GetComponent<ShotGuide> ().colors [1], Mathf.PingPong (Time.time / chargeTime, 1)));
 			strengthBuffer = Mathf.PingPong (Time.time/chargeTime, 1) * 50;
 			yield return null;
-		}
+			endDrag =Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
+		}
 		mat.SetColor ("_EmissionColor", Color.white);
 
 		//over a short period of time, lerp the color from start color to red to white then back again
@@ -123,16 +124,16 @@ public class PlayerController : Character {
 		if (usedItem == "Sword") {
 			GetComponent<Fighter> ().Sword ();
 		}
-		Vector3 magnitude = new Vector3 (endDrag.x - startDrag.x, 0, endDrag.y-startDrag.y);
-		this.rb.AddForce(magnitude.normalized * strengthBuffer, ForceMode.Impulse);
 
+		Vector3 magnitude = new Vector3 (endDrag.x - transform.position.x, 0, endDrag.z - transform.position.z);
+		this.rb.AddForce(magnitude.normalized * strengthBuffer, ForceMode.Impulse);
 		inPlay = true;
 		StartCoroutine ("LaunchDelay");
 
 	}
 
 	void Throw(){
-		Vector3 magnitude = new Vector3 (endDrag.x - startDrag.x, 0, endDrag.y-startDrag.y);
+		Vector3 magnitude = new Vector3 (endDrag.x -startDrag.x, 0, endDrag.y-startDrag.y);
 		GameObject axe = Instantiate (axePrefab);
 		axe.transform.position = transform.position;
 		axe.transform.parent = transform;
