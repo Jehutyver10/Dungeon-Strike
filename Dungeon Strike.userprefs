@@ -9,8 +9,8 @@
       <File FileName="Assets\Enemy Discs\Enemy.cs" Line="1" Column="1" />
       <File FileName="Assets\Projectile.cs" Line="1" Column="1" />
       <File FileName="Assets\MusicManager.cs" Line="1" Column="1" />
-      <File FileName="Assets\UI\UIManager.cs" Line="8" Column="19" />
-      <File FileName="Assets\UI\ItemButton.cs" Line="11" Column="20" />
+      <File FileName="Assets\UI\ItemButton.cs" Line="1" Column="1" />
+      <File FileName="Assets\UI\UIManager.cs" Line="23" Column="2" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

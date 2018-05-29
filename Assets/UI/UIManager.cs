@@ -7,8 +7,11 @@ public class UIManager : MonoBehaviour {
 
 	public static UIManager main;
 	public GameObject playerBar;
+	public Image playerBarFill;
+    
 	// Use this for initialization
 	void Start () {
+        main = this;
 
 	}
 
@@ -16,8 +19,13 @@ public class UIManager : MonoBehaviour {
 	void Update () {
 
 	}
-
-	public void SetPlayerBar() {
-
+    public void SetBarFill(float fill) {
+        playerBarFill.fillAmount = fill;
+    }
+	public void SetPlayerBar(GameObject bar){
+        playerBar = Instantiate(bar, this.transform) as GameObject;
+        playerBarFill = playerBar.transform.Find("Fill").GetComponent<Image>();
+        
+ 
 	}
 }

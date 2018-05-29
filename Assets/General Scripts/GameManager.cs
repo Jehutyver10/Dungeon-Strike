@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
 	Vector3 playerStartPosition;
 	// Use this for initialization
 
+
 	void Awake(){
 		DontDestroyOnLoad (gameObject);
 		DontDestroyOnLoad (GameObject.Find ("Environment"));

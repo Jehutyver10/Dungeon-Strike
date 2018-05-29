@@ -19,21 +19,25 @@ public class PlayerController : Character {
 	public PlayerState playerState;
 	public GameObject axePrefab;
 
-	public float rayLength, attackStrength = 1, throwBuffer = .02f, launchStrength = 50, launchForce;
-	private float chargeDuration;
+	public float rayLength, attackStrength = 1, throwBuffer = .02f, launchForce;
+
+    private float chargeDuration, launchStrength, chargeRate;
 	public int speed, gold;
 	public List <string> inventory;
 
-
-	// Use this for initialization
-	void Start () {
-		
-		rb = GetComponent<Rigidbody> ();
-		gm = FindObjectOfType<GameManager> ();
-		speed = Mathf.RoundToInt(rb.velocity.magnitude);
-		cam = FindObjectOfType<CameraFollow> ();
-		inventory = new List<string> ();
-
+   // Vector3 test;
+    // Use this for initialization
+    void Start() {
+        //test = Vector3.zero;
+        rb = GetComponent<Rigidbody>();
+        gm = FindObjectOfType<GameManager>();
+        speed = Mathf.RoundToInt(rb.velocity.magnitude);
+        cam = FindObjectOfType<CameraFollow>();
+        inventory = new List<string>();
+        launchStrength = myClass.strengthBuffer;
+        chargeDuration = myClass.chargeTime;
+        chargeRate = myClass.chargeRate;
+        UIManager.main.SetPlayerBar(myClass.chargeBar);
 
 	}
 	
@@ -44,10 +48,12 @@ public class PlayerController : Character {
 		}
 		speed = Mathf.RoundToInt(rb.velocity.magnitude);
 
+        //fDebug.DrawRay(transform.position, test);
 
-	}
+    }
 
-	void OnMouseDown(){
+
+    void OnMouseDown(){
 		GetStartPosition ();
 
 	}
@@ -84,10 +90,11 @@ public class PlayerController : Character {
 	public void GetEndPosition(){
 		if (playerState == PlayerState.Selected) {
 			StartCoroutine (Charge());
+            endDrag = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
 
-		}
-		else if (playerState == PlayerState.Charging) {
+        }
+        else if (playerState == PlayerState.Charging) {
 
 			if (!inPlay && isMyTurn) {//actually executing the attack
 				selector.GetComponent<Renderer> ().material.SetColor ("_EmissionColor", Color.black);
@@ -105,19 +112,23 @@ public class PlayerController : Character {
 	}
 
 	IEnumerator Charge(float chargeTime = 3){
+        float elapsedTime = 0;
 		yield return new WaitForSeconds (.1f);
 		playerState = PlayerState.Charging;
 		//print ("charging up");
 		Material mat = shotGuide.GetComponent<Renderer> ().material;
-		mat.SetColor ("_EmissionColor", Color.black);
+		//mat.SetColor ("_EmissionColor", Color.black);
 		while (playerState == PlayerState.Charging){
-			mat.SetColor("_EmissionColor", Color.Lerp (shotGuide.GetComponent<ShotGuide> ().colors [0], shotGuide.GetComponent<ShotGuide> ().colors [1], Mathf.PingPong (Time.time / chargeTime, 1)));
-			launchForce = Mathf.PingPong (Time.time/chargeTime, 1) * launchStrength;
-			yield return null;
-			endDrag =Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            UIManager.main.SetBarFill(Mathf.PingPong( elapsedTime / chargeTime, 1));
+            elapsedTime += Time.deltaTime * chargeRate;
+            //mat.SetColor("_EmissionColor", Color.Lerp (shotGuide.GetComponent<ShotGuide> ().colors [0], shotGuide.GetComponent<ShotGuide> ().colors [1], Mathf.PingPong (Time.time / chargeTime, 1)));
+            launchForce = Mathf.PingPong (elapsedTime/chargeTime, 1) * launchStrength;
+            
+            yield return null;
 
-		}
-		mat.SetColor ("_EmissionColor", Color.white);
+        }
+
+        mat.SetColor ("_EmissionColor", Color.white);
 
 		//over a short period of time, lerp the color from start color to red to white then back again
 		//if the player clicks before it reaches the start color again, retur
@@ -127,7 +138,7 @@ public class PlayerController : Character {
 			GetComponent<Fighter> ().Sword ();
 		}
 
-		Vector3 magnitude = new Vector3 (endDrag.x - transform.position.x, 0, endDrag.z - transform.position.z);
+        Vector3 magnitude = new Vector3 (endDrag.x - transform.position.x, 0, endDrag.z - transform.position.z);
 		this.rb.AddForce(magnitude.normalized * launchForce, ForceMode.Impulse);
 		inPlay = true;
 		StartCoroutine ("LaunchDelay");
