@@ -27,7 +27,10 @@ public class Health : MonoBehaviour {
 				health -= Mathf.RoundToInt (damage);
 			}
 		} else {
+            
 			health -= Mathf.RoundToInt (damage);
+            print(damage);
+            print(health);
 		}
 		if(health <= 0f){
 			FindObjectOfType<GameManager> ().characters.Remove (this.GetComponent<Character>());

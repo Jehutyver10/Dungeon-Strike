@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
 
-
+    public static GameManager main;
 	int turnCount = 0, tierWorth = 3;
 	public List<GameObject> ButtonList;
 	public GameObject EmptyButton;
@@ -47,39 +47,69 @@ public class GameManager : MonoBehaviour {
 //			Destroy (GameObject.Find ("Directional Light").gameObject);
 //			print ("Destroy default light");
 //		}
-		if (endTurn) {
-			EndTurn ();
-			endTurn = !endTurn;
-		}
+		//if (endTurn) {
+		//	EndTurn ();
+		//	endTurn = !endTurn;
+		//}
 	}
 
-	public void EndTurn (){
-		if (characters.Count > 1 && FindObjectOfType<PlayerController>()) {
-			
-			for (int i = 0; i < characters.Count; i++) {
-				
-				if (characters [i].isMyTurn == true) {
-					characters [i].isMyTurn = false;
-					characters [(i + 1) % characters.Count].isMyTurn = true;
-					if (characters [(i + 1) % characters.Count].GetComponent<Enemy> ()) {
-						characters [(i + 1) % characters.Count].GetComponent<Enemy> ().launched = false;
-					} else {
-						if (characters [(i + 1) % characters.Count].GetComponent<Fighter> ()) {
-							characters [(i + 1) % characters.Count].GetComponent<Fighter> ().ResetStats ();
-						}
-					}
+    public IEnumerator EndTurn(Character c, float delayTime = 3) {
+        c.isMyTurn = false;
 
-					//print ("it was the " + characters [i].name + "'s turn, but now it is the " + characters [(i + 1) % characters.Count].name + "'s turn");
-					break;
+        int listPos = (characters.IndexOf(c) + 1) % (characters.Count);
+        while (c.myState != Character.CharacterState.Off)
+        {
+            yield return null;
+        }
+        yield return new WaitForSeconds(delayTime);
 
-				}
-			} 
-			turnCount++;
-		}
+        if (characters.Count > 1)
+        {
+            BeginTurn(characters[listPos]);
+        }
+        //if (characters.count > 1 && findobjectoftype<playercontroller>())
+        //{
 
-	}
+        //    for (int i = 0; i < characters.count; i++)
+        //    {
 
-	public void OnPlayerDeath(){
+        //        if (characters[i].ismyturn == true)
+        //        {
+        //            characters[i].ismyturn = false;
+        //            characters[(i + 1) % characters.count].ismyturn = true;
+        //            if (characters[(i + 1) % characters.count].getcomponent<enemy>())
+        //            {
+        //                characters[(i + 1) % characters.count].getcomponent<enemy>().launched = false;
+        //            }
+        //            else
+        //            {
+        //                if (characters[(i + 1) % characters.count].getcomponent<fighter>())
+        //                {
+        //                    characters[(i + 1) % characters.count].getcomponent<fighter>().resetstats();
+        //                }
+        //            }
+
+        //            print("it was the " + characters[i].name + "'s turn, but now it is the " + characters[(i + 1) % characters.count].name + "'s turn");
+        //            break;
+
+        //        }
+        //    }
+        //    turncount++;
+        //}
+
+    }
+    void BeginTurn(Character c)
+    {
+        foreach(Character ch in characters)
+        {
+            ch.isMyTurn = false;
+            ch.myState = Character.CharacterState.Off;
+        }
+        c.isMyTurn = true;
+        c.myState = Character.CharacterState.Idle ;
+    }
+
+    public void OnPlayerDeath(){
 		GameOverScreen.SetActive(true);
 	}
 
@@ -114,6 +144,7 @@ public class GameManager : MonoBehaviour {
 			FindObjectOfType<PlayerController> ().GetComponent<Rigidbody> ().velocity = Vector3.zero;
 			SpawnEnemies ();
 			turnCount = 0;
+            BeginTurn(FindObjectOfType<PlayerController>());
 		} else {
 			Destroy (FindObjectOfType<Camera> ().gameObject);
 			Destroy (GameObject.Find ("EventSystem").gameObject);

@@ -19,7 +19,7 @@ public class ShotGuide : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (player.playerState != PlayerController.PlayerState.Charging) {
+		if (player.myState != PlayerController.CharacterState.Charging) {
 			mousePos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
 			mousePos = Vector3.ClampMagnitude (new Vector3 (mousePos.x, 0, mousePos.z), length*3) ;
 			//print (mousePos);
