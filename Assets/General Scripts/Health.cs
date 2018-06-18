@@ -4,11 +4,12 @@ using System.Collections;
 public class Health : MonoBehaviour {
 	public float health = 1000;
 	public float maxHealth = 1000;
+    public Character c;
 	Renderer rend;
 	// Use this for initialization
 	void Start () {
 		rend = GetComponent<Renderer> ();
-
+        c = GetComponent<Character>();
 	}
 	
 	// Update is called once per frame
@@ -20,18 +21,16 @@ public class Health : MonoBehaviour {
 	}
 
 	public void TakeDamage(float damage, bool knockback = false){
-		if (GetComponent<Fighter> ()) {
+        //find out how much damage is being taken;
+        float totalDamage = 0;
+        totalDamage = Mathf.RoundToInt(damage);
+        //cut damage in half if defending
+        if (GetComponent<Fighter> ()) {
 			if (GetComponent<Fighter> ().defending) {
-				health -= Mathf.RoundToInt (damage / 2);
-			} else {
-				health -= Mathf.RoundToInt (damage);
+				totalDamage = Mathf.RoundToInt (damage / 2);
 			}
-		} else {
-            
-			health -= Mathf.RoundToInt (damage);
-            print(damage);
-            print(health);
 		}
+        Coroutine reduction = StartCoroutine(ReduceHealth(totalDamage));
 		if(health <= 0f){
 			FindObjectOfType<GameManager> ().characters.Remove (this.GetComponent<Character>());
 			if (GetComponent<PlayerController> ()) {
@@ -53,7 +52,25 @@ public class Health : MonoBehaviour {
 			GetComponent<Animator>().SetTrigger("Take Damage");
 		}
 	}
+    IEnumerator ReduceHealth(float totalDamage, float speed = 20)
+    {
+        
+        float targetHealth = health - totalDamage;
+        while (health > targetHealth)
+        {
+            health = Mathf.Clamp(health - Time.deltaTime * speed, targetHealth, maxHealth);
+            if (c)
+            {
+                if (c.healthBarFill)
+                {
+                    print("reducing healthbar");
+                    c.healthBarFill.fillAmount = health / maxHealth;
+                }
+            }
 
+            yield return null;
+        }
+    }
 	public void RestoreHealth(float healthRestored){
 		if (health + healthRestored > maxHealth) {
 			health = maxHealth; //prevents overflow

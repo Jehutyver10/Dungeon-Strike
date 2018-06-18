@@ -10,7 +10,7 @@ public class UIManager : MonoBehaviour {
 	public Image playerBarFill;
     
 	// Use this for initialization
-	void Start () {
+	void Awake () {
         main = this;
 
 	}

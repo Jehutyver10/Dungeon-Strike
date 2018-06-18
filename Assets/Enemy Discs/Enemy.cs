@@ -23,8 +23,10 @@ public class Enemy : Character {
 
 
 	void Start () {
+        base.Start();
 		gm = FindObjectOfType<GameManager> ();
 		gm.characters.Add (this);
+        print("enemy start script executes");
 
 		
 	}

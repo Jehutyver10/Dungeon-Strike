@@ -29,7 +29,7 @@ public class GameManager : MonoBehaviour {
 		DontDestroyOnLoad (FindObjectOfType<Camera> ().gameObject);
 		DontDestroyOnLoad (FindObjectOfType<Canvas> ());
 		DontDestroyOnLoad(GameObject.Find("EventSystem"));
-		DontDestroyOnLoad (FindObjectOfType<MusicManager> ().gameObject);
+		//DontDestroyOnLoad (FindObjectOfType<MusicManager> ().gameObject);
 		characters = new List<Character>();
 		characters.Insert (0, FindObjectOfType<PlayerController> ());
 	}
@@ -179,14 +179,15 @@ public class GameManager : MonoBehaviour {
 	}
 	public void ContinueToUpgrades(){
 		VictoryScreen.SetActive (false);
-		if (FindObjectOfType<PlayerController>().GetComponent<Fighter>()) {
-			FighterUpgradeScreen.SetActive (true);
+        if (FindObjectOfType<PlayerController>().GetComponent<Fighter>())
+        {
+            FighterUpgradeScreen.SetActive(true);
 
-		}
-		foreach (PurchaseButton b in FindObjectsOfType<PurchaseButton>()) {
-			b.GetComponent<Button> ().interactable = true;
-		}
-	}
+        }
+        //foreach (PurchaseButton b in FindObjectsOfType<PurchaseButton>()) {
+        //	b.GetComponent<Button> ().interactable = true;
+        //}
+    }
 
 	public void SpawnEnemies(){
 		List<GameObject> enemyList = new List<GameObject> ();

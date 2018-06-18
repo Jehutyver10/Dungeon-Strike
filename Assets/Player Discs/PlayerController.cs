@@ -26,6 +26,7 @@ public class PlayerController : Character {
    // Vector3 test;
     // Use this for initialization
     void Start() {
+        base.Start();
         //test = Vector3.zero;
         rb = GetComponent<Rigidbody>();
         gm = FindObjectOfType<GameManager>();
@@ -157,7 +158,8 @@ public class PlayerController : Character {
 
 	IEnumerator LaunchDelay(){
         float elapsedTime = 0;
-        ActivateItems(); StartCoroutine(gm.EndTurn(GetComponent<Character>(), 2));
+        //ActivateItems();
+        StartCoroutine(gm.EndTurn(GetComponent<Character>(), 2));
 
         while (elapsedTime < .5f)
         {

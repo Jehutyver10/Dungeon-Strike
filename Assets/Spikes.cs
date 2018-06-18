@@ -16,8 +16,8 @@ public class Spikes : MonoBehaviour {
 	}
 	void OnCollisionEnter(Collision col){
 		if (col.gameObject.GetComponent<PlayerController> ()) {
-			col.gameObject.GetComponent<Health> ().TakeDamage (col.relativeVelocity.magnitude);
-			print (damage);
+			col.gameObject.GetComponent<Health> ().TakeDamage (damage);
+            print(damage);
 		}
 	}
 }

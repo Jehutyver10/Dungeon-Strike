@@ -10,6 +10,8 @@ public class Fighter: MonoBehaviour {
 	float startMass, startStrength, startSpeed;
 	float defenseBuff;
 	public bool defending;
+    int rage;
+    PlayerController pc;
 
 
 	// Use this for initialization
@@ -23,7 +25,7 @@ public class Fighter: MonoBehaviour {
 		health.health = 150;
 		startStrength = GetComponent<PlayerController> ().attackStrength;
 		startSpeed = GetComponent<PlayerController> ().launchForce;
-
+        pc= GetComponent<PlayerController>();
 	}
 
 	public void Shield(){
@@ -32,22 +34,25 @@ public class Fighter: MonoBehaviour {
 	}
 
 	public void Sword(){
-		GetComponent<PlayerController> ().attackStrength = GetComponent<PlayerController> ().attackStrength * 2;
-		GetComponent<PlayerController> ().launchForce = GetComponent<PlayerController> ().launchForce * 4;
+	    pc.attackStrength = pc.attackStrength * 2;
+		pc.launchForce = pc.launchForce * 4;
 	
 	}
 		
 	public void ResetStats(){
 		rb.mass = startMass;
 		defending = false;
-		GetComponent<PlayerController> ().attackStrength = startStrength;
-		GetComponent<PlayerController> ().launchForce = startSpeed;
+		pc.attackStrength = startStrength;
+		pc.launchForce = startSpeed;
 
 	}
-
-
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void OnCollisionEnter(Collision collision)
+    {
+        Enemy enemy = collision.gameObject.GetComponent<Enemy>();
+        if (enemy)
+        {
+            rage += 1;
+            print("Rage: " + rage);
+        }
+    }
 }
