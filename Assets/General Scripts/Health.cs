@@ -4,6 +4,8 @@ using System.Collections;
 public class Health : MonoBehaviour {
 	public float health = 1000;
 	public float maxHealth = 1000;
+    [SerializeField]
+    private float healthBarReductionSpeed;
     public Character c;
 	Renderer rend;
 	// Use this for initialization
@@ -54,8 +56,13 @@ public class Health : MonoBehaviour {
 	}
     IEnumerator ReduceHealth(float totalDamage, float speed = 20)
     {
-        
+
+        if (c.healthBarFill)
+        {
+            c.healthBarFill.gameObject.SetActive(true);
+        }
         float targetHealth = health - totalDamage;
+
         while (health > targetHealth)
         {
             health = Mathf.Clamp(health - Time.deltaTime * speed, targetHealth, maxHealth);
@@ -63,12 +70,19 @@ public class Health : MonoBehaviour {
             {
                 if (c.healthBarFill)
                 {
-                    print("reducing healthbar");
+                    //TODO: add easing to the reduction speed
+                   
                     c.healthBarFill.fillAmount = health / maxHealth;
+                    c.AdjustHealthBarPosition();
                 }
             }
 
             yield return null;
+        }
+
+        yield return new WaitForSeconds(2);
+        if (c.healthBarFill) {
+            c.healthBarFill.gameObject.SetActive(false);
         }
     }
 	public void RestoreHealth(float healthRestored){

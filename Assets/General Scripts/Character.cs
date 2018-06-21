@@ -37,14 +37,24 @@ public class Character : MonoBehaviour {
         //the outline bar must be the parent gameobject and the fill its first child
         GameObject temp = Instantiate(healthBarPrefab) as GameObject;
         temp.name = name + " health bar";
-        Vector3 pos = Camera.main.WorldToScreenPoint(transform.position);
-        Vector2 screenPos = new Vector2(pos.x, pos.y) - UIManager.main.GetComponent<RectTransform>().anchoredPosition;
         healthBarFill = temp.GetComponent<Image>();
-        
         healthBar = healthBarFill.transform.GetChild(0).GetComponent<Image>();
         healthBarFill.transform.SetParent(UIManager.main.transform);
-        healthBarFill.rectTransform.anchoredPosition = screenPos;
-//        healthBarHolder.rectTransform.anchorMax = pos;
-  //      healthBarHolder.rectTransform.anchorMin = pos;
+        AdjustHealthBarPosition();
+
+        //        healthBarHolder.rectTransform.anchorMax = pos;
+        //      healthBarHolder.rectTransform.anchorMin = pos;
+
+        healthBarFill.gameObject.SetActive(false);
     }
+
+    public void AdjustHealthBarPosition()
+    {
+        Vector3 pos = Camera.main.WorldToScreenPoint(transform.position);
+        Vector2 screenPos = new Vector2(pos.x, pos.y) - UIManager.main.GetComponent<RectTransform>().anchoredPosition;
+        healthBarFill.rectTransform.anchoredPosition = screenPos;
+
+    }
+
+
 }
