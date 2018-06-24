@@ -22,6 +22,12 @@ public class UIManager : MonoBehaviour {
     public void SetBarFill(float fill) {
         playerBarFill.fillAmount = fill;
     }
+
+    public void SetChargeMeterColor(Color color)
+    {
+        playerBarFill.color = color;
+        print(playerBarFill.color);
+    }
 	public void SetPlayerBar(GameObject bar){
         playerBar = Instantiate(bar, this.transform) as GameObject;
         playerBarFill = playerBar.transform.Find("Fill").GetComponent<Image>();

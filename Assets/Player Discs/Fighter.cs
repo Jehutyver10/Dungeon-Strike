@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class Fighter: MonoBehaviour {
 	public enum Item {Shield, Sword, Axe, none};
+    public Gradient fighterGradient;
 	Rigidbody rb;
 	Health health;
 	public Item item;
 	float startMass, startStrength, startSpeed;
 	float defenseBuff;
-	public bool defending;
+	public bool defending, raging = false;
     int rage;
     PlayerController pc;
 

@@ -12,9 +12,9 @@ public class PlayerController : Character {
 	public string usedItem;
 	public GameObject selector, shotGuide;
 
-    public PlayerClass myClass;
+    public PlayerClass playerClass;
 	public enum ClassName {Fighter, Wizard, Rogue};
-	public ClassName playerClass;
+	public ClassName myClass;
 	public GameObject axePrefab;
 
 	public float rayLength, throwBuffer = .02f, launchForce, velocityThreshold = 0.01f;
@@ -33,10 +33,10 @@ public class PlayerController : Character {
         speed = Mathf.RoundToInt(rb.velocity.magnitude);
         cam = FindObjectOfType<CameraFollow>();
         inventory = new List<string>();
-        launchStrength = myClass.strengthBuffer;
-        chargeDuration = myClass.chargeTime;
-        chargeRate = myClass.chargeRate;
-        UIManager.main.SetPlayerBar(myClass.chargeBar);
+        launchStrength = playerClass.strengthBuffer;
+        chargeDuration = playerClass.chargeTime;
+        chargeRate = playerClass.chargeRate;
+        UIManager.main.SetPlayerBar(playerClass.chargeBar);
 
 	}
 	
@@ -88,7 +88,7 @@ public class PlayerController : Character {
 
 	public void GetEndPosition(){
 		if (myState == CharacterState.Selected) {
-			StartCoroutine (Charge());
+            StartCoroutine(Charge(GetChargeTime()));
             endDrag = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
 
@@ -110,15 +110,29 @@ public class PlayerController : Character {
 		}
 	}
 
+    float GetChargeTime()
+    {
+        if (myClass == ClassName.Fighter)
+        {
+            if (GetComponent<Fighter>().raging)
+            {
+                return 5f;
+            }
+        }
+        return 3f;
+    }
 	IEnumerator Charge(float chargeTime = 3){
         float elapsedTime = 0;
+        float currentCharge = 0;
 		yield return new WaitForSeconds (.1f);
 		myState = CharacterState.Charging;
 		//print ("charging up");
 		Material mat = shotGuide.GetComponent<Renderer> ().material;
 		//mat.SetColor ("_EmissionColor", Color.black);
 		while (myState == CharacterState.Charging){
-            UIManager.main.SetBarFill(Mathf.PingPong( elapsedTime / chargeTime, 1));
+            currentCharge = Mathf.PingPong(elapsedTime / chargeTime, 1);
+            UIManager.main.SetBarFill(currentCharge);
+            AdjustChargeMeter(currentCharge);
             elapsedTime += Time.deltaTime * chargeRate;
             //mat.SetColor("_EmissionColor", Color.Lerp (shotGuide.GetComponent<ShotGuide> ().colors [0], shotGuide.GetComponent<ShotGuide> ().colors [1], Mathf.PingPong (Time.time / chargeTime, 1)));
             launchForce = Mathf.PingPong (elapsedTime/chargeTime, 1) * launchStrength;
@@ -132,6 +146,20 @@ public class PlayerController : Character {
 		//over a short period of time, lerp the color from start color to red to white then back again
 		//if the player clicks before it reaches the start color again, retur
 	}
+
+    void AdjustChargeMeter(float charge)
+    {
+        if(myClass == ClassName.Fighter)
+        {
+            if (!GetComponent<Fighter>().raging)
+            {
+                charge = charge * .67f;
+            }
+            UIManager.main.SetChargeMeterColor(GetComponent<Fighter>().fighterGradient.Evaluate(charge));
+        }
+
+      
+    }
 	void Launch(float strength = 1){
 		if (usedItem == "Sword") {
 			GetComponent<Fighter> ().Sword ();
