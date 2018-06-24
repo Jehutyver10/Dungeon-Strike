@@ -64,8 +64,8 @@ public class PlayerController : Character {
 				//print ("Player's turn");
 
 				startDrag = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, 0, Input.mousePosition.y));
-				StartCoroutine ("Select");
-
+				StartCoroutine (Select());
+                ResolveStartOfTurn();
 			}
 		}
 	}
@@ -86,6 +86,13 @@ public class PlayerController : Character {
 
 	}
 
+    public void ResolveStartOfTurn()
+    {
+        if(myClass == ClassName.Fighter)
+        {
+            GetComponent<Fighter>().CheckRage();
+        }
+    }
 	public void GetEndPosition(){
 		if (myState == CharacterState.Selected) {
             StartCoroutine(Charge(GetChargeTime()));
@@ -107,7 +114,6 @@ public class PlayerController : Character {
 				}
 				myState = CharacterState.Launched;
                 attackStrength = GetAttackStrength();
-                print("Attack strength: " + attackStrength);
 
             }
         }
@@ -203,6 +209,7 @@ public class PlayerController : Character {
             if (System.Math.Round(rb.velocity.magnitude, 4) < velocityThreshold)
             {
                 myState = CharacterState.Off;
+                ResolveEndOfTurn();
             }
             yield return null;
 		}
@@ -214,6 +221,16 @@ public class PlayerController : Character {
 
     }
 
+    void ResolveEndOfTurn()
+    {
+        if(myClass == ClassName.Fighter)
+        {
+            if (GetComponent<Fighter>().raging)
+            {
+                GetComponent<Fighter>().ResetRage();
+            }
+        }
+    }
     public void UseItem(string itemName){ //readies item to be used
 		if (itemName == "Shield") {
 			GetComponent<Fighter> ().item = Fighter.Item.Shield;

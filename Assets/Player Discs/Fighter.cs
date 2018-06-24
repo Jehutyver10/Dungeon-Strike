@@ -14,7 +14,9 @@ public class Fighter: MonoBehaviour {
     public float rageAttack;
 	float defenseBuff;
 	public bool defending, raging = false;
+    [SerializeField]
     int rage;
+    public int rageLimit;
     PlayerController pc;
 
 
@@ -58,6 +60,21 @@ public class Fighter: MonoBehaviour {
 
         rage += 1;
         print("Rage: " + rage);
+    }
 
+    public void CheckRage() {
+        if (rage >= rageLimit)
+        {
+            raging = true;
+        }
+        else
+        {
+            raging = false;
+        }
+    }
+    public void ResetRage()
+    {
+        rage = 0;
+        CheckRage();
     }
 }
