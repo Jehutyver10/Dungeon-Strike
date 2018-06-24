@@ -9,6 +9,9 @@ public class Fighter: MonoBehaviour {
 	Health health;
 	public Item item;
 	float startMass, startStrength, startSpeed;
+
+    public float baseAttack;
+    public float rageAttack;
 	float defenseBuff;
 	public bool defending, raging = false;
     int rage;
@@ -27,6 +30,8 @@ public class Fighter: MonoBehaviour {
 		startStrength = GetComponent<PlayerController> ().attackStrength;
 		startSpeed = GetComponent<PlayerController> ().launchForce;
         pc= GetComponent<PlayerController>();
+        baseAttack = pc.attackStrength;
+        rageAttack = baseAttack * 2;
 	}
 
 	public void Shield(){
@@ -50,10 +55,9 @@ public class Fighter: MonoBehaviour {
     public void OnCollisionEnter(Collision collision)
     {
         Enemy enemy = collision.gameObject.GetComponent<Enemy>();
-        if (enemy)
-        {
-            rage += 1;
-            print("Rage: " + rage);
-        }
+
+        rage += 1;
+        print("Rage: " + rage);
+
     }
 }

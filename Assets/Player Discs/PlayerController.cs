@@ -106,8 +106,11 @@ public class PlayerController : Character {
 					Launch ();
 				}
 				myState = CharacterState.Launched;
-			}
-		}
+                attackStrength = GetAttackStrength();
+                print("Attack strength: " + attackStrength);
+
+            }
+        }
 	}
 
     float GetChargeTime()
@@ -195,7 +198,7 @@ public class PlayerController : Character {
             yield return null;
         }
         myState = CharacterState.Launched;
-
+        attackStrength = GetAttackStrength();
         while (myState != CharacterState.Off) {
             if (System.Math.Round(rb.velocity.magnitude, 4) < velocityThreshold)
             {
@@ -248,6 +251,22 @@ public class PlayerController : Character {
 		}
 	}
     //
+
+    float GetAttackStrength()
+    {
+        if (myState == CharacterState.Launched)
+        {
+            if (myClass == ClassName.Fighter)
+            {
+                if (GetComponent<Fighter>().raging)
+                {
+                    return GetComponent<Fighter>().rageAttack;
+                }
+                return GetComponent<Fighter>().baseAttack;
+            }
+        }
+        return attackStrength;
+    }
 
 
 

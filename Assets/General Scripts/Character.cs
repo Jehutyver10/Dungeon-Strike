@@ -25,6 +25,7 @@ public class Character : MonoBehaviour {
 
             }
         }
+
     }
 
     public void Start()
