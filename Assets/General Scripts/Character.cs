@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 [RequireComponent(typeof(Health))]
-public class Character : MonoBehaviour {
+public abstract class Character : MonoBehaviour {
 
 	public bool isMyTurn = false, inPlay = false;
     public enum CharacterState { Idle, Selected, Charging, Launched, Off };//off refers to off turn
@@ -11,9 +11,10 @@ public class Character : MonoBehaviour {
     [SerializeField]
     private GameObject healthBarPrefab;
     [HideInInspector]
+    public Health health;
     public Image healthBar, healthBarFill;
     public float attackStrength;
-    void OnCollisionEnter(Collision col)
+    public void OnCollisionEnter(Collision col)
     {
         if (myState == CharacterState.Launched)
         {
@@ -30,6 +31,7 @@ public class Character : MonoBehaviour {
 
     public void Start()
     {
+        health = GetComponent<Health>();
         SetHealthBar();
     }
 
@@ -56,6 +58,8 @@ public class Character : MonoBehaviour {
         healthBarFill.rectTransform.anchoredPosition = screenPos;
 
     }
+
+    public abstract IEnumerator EndTurn();
 
 
 }

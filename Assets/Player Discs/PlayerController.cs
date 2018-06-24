@@ -177,7 +177,7 @@ public class PlayerController : Character {
         Vector3 magnitude = new Vector3 (endDrag.x - transform.position.x, 0, endDrag.z - transform.position.z);
 		this.rb.AddForce(magnitude.normalized * launchForce, ForceMode.Impulse);
 		inPlay = true;
-		StartCoroutine (LaunchDelay());
+		StartCoroutine (EndTurn());
 
 	}
 
@@ -189,11 +189,11 @@ public class PlayerController : Character {
 	
 		axe.GetComponent<Rigidbody> ().AddForce (magnitude.normalized * throwBuffer, ForceMode.Impulse);
 	
-		StartCoroutine (LaunchDelay());
+		StartCoroutine (EndTurn());
 
 	}
 
-	IEnumerator LaunchDelay(){
+	public override IEnumerator EndTurn(){
         float elapsedTime = 0;
         //ActivateItems();
         StartCoroutine(gm.EndTurn(GetComponent<Character>(), 2));
