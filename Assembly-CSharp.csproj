@@ -68,6 +68,7 @@
     <Compile Include="Assets\General Scripts\Health.cs" />
     <Compile Include="Assets\General Scripts\PurchaseButton.cs" />
     <Compile Include="Assets\General Scripts\TurnMaster.cs" />
+    <Compile Include="Assets\LevelExit.cs" />
     <Compile Include="Assets\MusicManager.cs" />
     <Compile Include="Assets\Player Discs\Fighter.cs" />
     <Compile Include="Assets\Player Discs\PlayerClass.cs" />

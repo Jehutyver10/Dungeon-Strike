@@ -23,15 +23,16 @@ public class GameManager : MonoBehaviour {
 
 
 	void Awake(){
-		DontDestroyOnLoad (gameObject);
-		DontDestroyOnLoad (GameObject.Find ("Environment"));
-		DontDestroyOnLoad (FindObjectOfType<PlayerController> ().gameObject);
-		DontDestroyOnLoad (FindObjectOfType<Camera> ().gameObject);
-		DontDestroyOnLoad (FindObjectOfType<Canvas> ());
-		DontDestroyOnLoad(GameObject.Find("EventSystem"));
+		//DontDestroyOnLoad (gameObject);
+		//DontDestroyOnLoad (GameObject.Find ("Environment"));
+		//DontDestroyOnLoad (FindObjectOfType<PlayerController> ().gameObject);
+		//DontDestroyOnLoad (FindObjectOfType<Camera> ().gameObject);
+		//DontDestroyOnLoad (FindObjectOfType<Canvas> ());
+		//DontDestroyOnLoad(GameObject.Find("EventSystem"));
 		//DontDestroyOnLoad (FindObjectOfType<MusicManager> ().gameObject);
 		characters = new List<Character>();
 		characters.Insert (0, FindObjectOfType<PlayerController> ());
+        main = this;
 	}
 	void Start () {
 		playerStartPosition = FindObjectOfType<PlayerController> ().transform.position;
@@ -51,6 +52,16 @@ public class GameManager : MonoBehaviour {
 		//	EndTurn ();
 		//	endTurn = !endTurn;
 		//}
+        if(characters.Count == 1)
+        {
+            if (characters[0].GetComponent<CharacterController>())
+            {
+                if (characters[0].myState == Character.CharacterState.Off)
+                {
+                    BeginTurn(characters[0]);
+                }
+            }
+        }
 	}
 
     public IEnumerator EndTurn(Character c, float delayTime = 3) {
@@ -63,10 +74,8 @@ public class GameManager : MonoBehaviour {
         }
         yield return new WaitForSeconds(delayTime);
 
-        if (characters.Count > 1)
-        {
-            BeginTurn(characters[listPos]);
-        }
+        BeginTurn(characters[Mathf.Clamp(listPos, 0, characters.Count - 1)]);
+        
         //if (characters.count > 1 && findobjectoftype<playercontroller>())
         //{
 
@@ -98,6 +107,8 @@ public class GameManager : MonoBehaviour {
         //}
 
     }
+
+
     void BeginTurn(Character c)
     {
         foreach(Character ch in characters)
@@ -134,37 +145,38 @@ public class GameManager : MonoBehaviour {
 
 	public void ContinueToNextLevel(){
 		FighterUpgradeScreen.SetActive (false);
-		levelCount++;
+		//levelCount++;
 
-		SceneManager.CreateScene ("Level " + levelCount.ToString ());
+		//SceneManager.CreateScene ("Level " + levelCount.ToString ());
 		SceneManager.LoadScene ("Level " + levelCount.ToString ());
-		if (levelCount < 15) {
-			FindObjectOfType<PlayerController> ().transform.position = playerStartPosition;
-			FindObjectOfType<PlayerController> ().GetComponent<Health> ().health = FindObjectOfType<PlayerController> ().GetComponent<Health> ().maxHealth;
-			FindObjectOfType<PlayerController> ().GetComponent<Rigidbody> ().velocity = Vector3.zero;
-			SpawnEnemies ();
-			turnCount = 0;
-            BeginTurn(FindObjectOfType<PlayerController>());
-		} else {
-			Destroy (FindObjectOfType<Camera> ().gameObject);
-			Destroy (GameObject.Find ("EventSystem").gameObject);
-			Destroy (FindObjectOfType<PlayerController> ().gameObject);
-			Destroy (GameObject.Find ("Environment").gameObject);
-			Destroy (FindObjectOfType<Canvas> ().gameObject);
-			Destroy (FindObjectOfType<MusicManager> ().gameObject);
-			Destroy (gameObject);
-		}
-		if (levelCount == 14) {
-			FindObjectOfType<MusicManager> ().audioSource.clip = FindObjectOfType<MusicManager> ().audioClips [1];
-			FindObjectOfType<MusicManager> ().audioSource.Play ();
-		}
+		//if (levelCount < 15) {
+		//	FindObjectOfType<PlayerController> ().transform.position = playerStartPosition;
+		//	FindObjectOfType<PlayerController> ().GetComponent<Health> ().health = FindObjectOfType<PlayerController> ().GetComponent<Health> ().maxHealth;
+		//	FindObjectOfType<PlayerController> ().GetComponent<Rigidbody> ().velocity = Vector3.zero;
+		//	SpawnEnemies ();
+		//	turnCount = 0;
+  //          BeginTurn(FindObjectOfType<PlayerController>());
+		//} else {
+		//	Destroy (FindObjectOfType<Camera> ().gameObject);
+		//	Destroy (GameObject.Find ("EventSystem").gameObject);
+		//	Destroy (FindObjectOfType<PlayerController> ().gameObject);
+		//	Destroy (GameObject.Find ("Environment").gameObject);
+		//	Destroy (FindObjectOfType<Canvas> ().gameObject);
+		//	Destroy (FindObjectOfType<MusicManager> ().gameObject);
+		//	Destroy (gameObject);
+		//}
+		//if (levelCount == 14) {
+		//	FindObjectOfType<MusicManager> ().audioSource.clip = FindObjectOfType<MusicManager> ().audioClips [1];
+		//	FindObjectOfType<MusicManager> ().audioSource.Play ();
+		//}
 
 
 
 	}
 
 	public void OnVictory (){
-		VictoryScreen.SetActive(true);
+        SceneManager.LoadScene("Level 1");
+        //VictoryScreen.SetActive(true);
 
 	}
 

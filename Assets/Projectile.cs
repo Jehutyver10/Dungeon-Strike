@@ -23,7 +23,7 @@ public class Projectile : MonoBehaviour {
         StartCoroutine(EnableSelfInjury());
 	}
 	
-    IEnumerator EnableSelfInjury(float totalTime = 0.5f)
+    IEnumerator EnableSelfInjury(float totalTime = 10f)
     {
         float elapsedTime = 0;
         //interrupt the coroutine in the case of collision
@@ -37,8 +37,7 @@ public class Projectile : MonoBehaviour {
 	// Update is called once per frame
 
 	IEnumerator SelfDestruct(){
-        yield return new WaitForSeconds(3);
-        StartCoroutine(owner.EndTurn());
+        yield return new WaitForSeconds(lifetime);
 		Destroy (gameObject);
 	}
 	void OnCollisionEnter(Collision col){

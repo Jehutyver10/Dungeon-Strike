@@ -8,12 +8,14 @@ public class Enemy : Character {
 	GameManager gm;
 	Rigidbody rb;
     PlayerController player;
+    public GameObject shotGuide;
 	public float velocityThreshold = 3;
 	public float strength = 3, throwStrength;
 	public enum EnemyClass{basic, Standard, Minion, Boss};
 	public EnemyClass enemyClass;
 	public GameObject projectilePrefab;
-    Vector3 targetPosition;
+    public Vector3 targetPosition;
+    public GameObject projectile;
     // Use this for initialization
 
 
@@ -28,7 +30,7 @@ public class Enemy : Character {
     }
     void Awake(){
 		rb = GetComponent<Rigidbody> ();
-		DontDestroyOnLoad (this.gameObject);
+		//DontDestroyOnLoad (this.gameObject);
 
 
 	}
@@ -40,6 +42,7 @@ public class Enemy : Character {
 		gm.characters.Add (this);
         print("enemy start script executes");
         player = FindObjectOfType<PlayerController>();
+        
 		
 	}
 	
@@ -53,12 +56,23 @@ public class Enemy : Character {
 			} else {
 				Attack ();
 			}
+
 		}
 
-        //target the player at the start of the player's turn;
-        if(player.isMyTurn && player.myState == CharacterState.Idle)
+        if (!player.isMyTurn)
         {
-            targetPosition = player.transform.position;
+            shotGuide.SetActive(false);
+
+        }
+        else
+        {
+            shotGuide.SetActive(true);
+        }
+        Debug.DrawLine(transform.position, targetPosition);
+        //target the player at the start of the player's turn;
+        if (player.isMyTurn && player.myState == CharacterState.Idle)
+        {
+            targetPosition = new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z);
         }
 	}
 
@@ -79,13 +93,13 @@ public class Enemy : Character {
 
 	}
 	void Throw(){
-		GameObject spear = Instantiate (projectilePrefab);
-		spear.transform.position = transform.position;
-		spear.transform.parent = transform;
+		projectile = Instantiate (projectilePrefab);
+		projectile.transform.position = transform.position;
+		projectile.transform.parent = transform;
 		Vector3 magnitude = targetPosition - transform.position;
-		spear.GetComponent<Rigidbody> ().AddForce (magnitude * throwStrength, ForceMode.Impulse);
-        spear.GetComponent<Projectile>().lifetime = 3;
-        spear.GetComponent<Projectile>().owner = this;
+		projectile.GetComponent<Rigidbody> ().AddForce (magnitude * throwStrength, ForceMode.Impulse);
+        projectile.GetComponent<Projectile>().lifetime = 3;
+        projectile.GetComponent<Projectile>().owner = this;
         myState = CharacterState.Launched;
 
         StartCoroutine(EndTurn());
@@ -112,7 +126,7 @@ public class Enemy : Character {
 
         while (myState != CharacterState.Off)
         {
-            if (System.Math.Round(rb.velocity.magnitude, 4) < velocityThreshold)
+            if (!projectile)
             {
                 myState = CharacterState.Off;
             }

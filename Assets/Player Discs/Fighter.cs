@@ -12,6 +12,8 @@ public class Fighter: MonoBehaviour {
 
     public float baseAttack;
     public float rageAttack;
+    public float baseLaunchStrength;
+    public float rageLaunchStrength;
 	float defenseBuff;
 	public bool defending, raging = false;
     [SerializeField]
@@ -33,7 +35,9 @@ public class Fighter: MonoBehaviour {
 		startSpeed = GetComponent<PlayerController> ().launchForce;
         pc= GetComponent<PlayerController>();
         baseAttack = pc.attackStrength;
-        rageAttack = baseAttack * 2;
+        rageAttack = baseAttack * 3;
+        baseLaunchStrength = pc.launchStrength;
+        rageLaunchStrength = pc.launchStrength * 3;
 	}
 
 	public void Shield(){
@@ -59,7 +63,6 @@ public class Fighter: MonoBehaviour {
         Enemy enemy = collision.gameObject.GetComponent<Enemy>();
 
         rage += 1;
-        print("Rage: " + rage);
     }
 
     public void CheckRage() {

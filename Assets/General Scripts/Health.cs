@@ -20,6 +20,15 @@ public class Health : MonoBehaviour {
 			health = maxHealth;
 		}
 		VisualizeDamage ();
+
+        if(health <= 0)
+        {
+            GameManager.main.characters.Remove(GetComponent<Character>());
+            Destroy(c.healthBarFill);
+            Destroy(c.healthBar);
+            Destroy(gameObject);
+        }
+
 	}
 
 	public void TakeDamage(float damage, bool knockback = false){
@@ -32,25 +41,15 @@ public class Health : MonoBehaviour {
 				totalDamage = Mathf.RoundToInt (damage / 2);
 			}
 		}
-        Coroutine reduction = StartCoroutine(ReduceHealth(totalDamage));
-		if(health <= 0f){
-			FindObjectOfType<GameManager> ().characters.Remove (this.GetComponent<Character>());
-			if (GetComponent<PlayerController> ()) {
-				FindObjectOfType<GameManager> ().characters.Clear();
-				FindObjectOfType<GameManager> ().OnPlayerDeath ();
-			}
-			if (GetComponent<Enemy> ()) {
-				if (FindObjectOfType<PlayerController> ()) {
-					FindObjectOfType<PlayerController> ().gold++;
-				}
-				if (	FindObjectOfType<GameManager> ().characters.Count == 1 && 	FindObjectOfType<GameManager> ().characters [0].GetComponent<PlayerController> ()) {//if last enemy
-					FindObjectOfType<GameManager> ().OnVictory ();
-				}
-			}
-
-			Destroy(gameObject);
-		}
-		if(GetComponent<Animator>()){
+        if (totalDamage > health)
+        {
+            Coroutine reduction = StartCoroutine(ReduceHealth(totalDamage, 200));
+        }
+        else
+        {
+            Coroutine reduction = StartCoroutine(ReduceHealth(totalDamage));
+        }
+        if (GetComponent<Animator>()){
 			GetComponent<Animator>().SetTrigger("Take Damage");
 		}
 	}

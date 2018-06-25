@@ -4,29 +4,44 @@ using UnityEngine;
 
 public class ShotGuide : MonoBehaviour {
 	Vector3 mousePos;
-	PlayerController player;
+    [HideInInspector]
+    public Character owner;
 	LineRenderer lr;
 	int collisionCounter; 
-
+    public enum OwnerType { Player, Enemy};
+    public OwnerType ownerType;
 	public Color[] colors;
 	public float length = 3;
 	// Use this for initialization
 	void Start () {
 		lr = GetComponent<LineRenderer> ();
-		player = FindObjectOfType<PlayerController> ();	
+
+        owner = transform.parent.GetComponent<Character>();
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (player.myState != PlayerController.CharacterState.Charging) {
-			mousePos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-			mousePos = Vector3.ClampMagnitude (new Vector3 (mousePos.x, 0, mousePos.z), length*3) ;
-			//print (mousePos);
-			CalculateRicochet (mousePos);
-			//lr.SetPosition (0, player.transform.position);
-			//lr.SetPosition (1,  player.transform.position + new Vector3(mousePos.x, 0.59f, mousePos.z));
-		}
+        if (ownerType == OwnerType.Player)
+        {
+
+
+            if (owner.myState != PlayerController.CharacterState.Charging)
+            {
+                mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                mousePos = Vector3.ClampMagnitude(new Vector3(mousePos.x, 0, mousePos.z), length * 3);
+                //print (mousePos);
+                CalculateRicochet(mousePos);
+                //lr.SetPosition (0, player.transform.position);
+                //lr.SetPosition (1,  player.transform.position + new Vector3(mousePos.x, 0.59f, mousePos.z));
+            }
+        }
+        else
+        {
+            
+            CalculateRicochet(owner.GetComponent<Enemy>().targetPosition);
+        }
+        lr.SetPosition(0, owner.transform.position);
 	}
 
 	void CalculateRicochet(Vector3 mousePos){
@@ -34,7 +49,7 @@ public class ShotGuide : MonoBehaviour {
 		int bounceCounter = 0;
 
 
-		Ray shotRay = new Ray (player.transform.position, mousePos - transform.position);
+		Ray shotRay = new Ray (owner.transform.position, mousePos - transform.position);
 		RaycastHit hit;
 		Ray outRay;
 
@@ -49,12 +64,17 @@ public class ShotGuide : MonoBehaviour {
 				remainingLength = remainingLength - Vector3.Distance (lr.GetPosition (bounceCounter), lr.GetPosition (bounceCounter + 1));
 				bounceCounter++;
 				shotRay = outRay;
+                if (hit.collider.GetComponent<Character>())
+                {
+                    remainingLength = 0;
+                    lr.positionCount--;
+                }
 
 
 				//lr.SetPosition (2, outRay.origin + outRay.direction * 3);
 			} else {
 				lr.SetPosition (bounceCounter, shotRay.origin);
-				lr.SetPosition (bounceCounter + 1, lr.GetPosition(bounceCounter) + new Vector3 (shotRay.direction.x , player.transform.position.y, shotRay.direction.z ) * remainingLength);
+				lr.SetPosition (bounceCounter + 1, lr.GetPosition(bounceCounter) + new Vector3 (shotRay.direction.x , 0, shotRay.direction.z ) * remainingLength);
 				break;
 		
 			}

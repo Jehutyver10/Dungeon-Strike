@@ -18,14 +18,21 @@ public class PlayerController : Character {
 	public GameObject axePrefab;
 
 	public float rayLength, throwBuffer = .02f, launchForce, velocityThreshold = 0.01f;
+    [HideInInspector]
+    public float launchStrength;
 
-    private float chargeDuration, launchStrength, chargeRate;
+    private float chargeDuration, chargeRate;
 	public int speed, gold;
 	public List <string> inventory;
 
-   // Vector3 test;
+    private void Awake()
+    {
+        launchStrength = playerClass.strengthBuffer;
+
+    }
+    // Vector3 test;
     // Use this for initialization
-    void Start() {
+    new void Start() {
         base.Start();
         //test = Vector3.zero;
         rb = GetComponent<Rigidbody>();
@@ -33,7 +40,6 @@ public class PlayerController : Character {
         speed = Mathf.RoundToInt(rb.velocity.magnitude);
         cam = FindObjectOfType<CameraFollow>();
         inventory = new List<string>();
-        launchStrength = playerClass.strengthBuffer;
         chargeDuration = playerClass.chargeTime;
         chargeRate = playerClass.chargeRate;
         UIManager.main.SetPlayerBar(playerClass.chargeBar);
@@ -48,7 +54,17 @@ public class PlayerController : Character {
 		speed = Mathf.RoundToInt(rb.velocity.magnitude);
 
         //fDebug.DrawRay(transform.position, test);
-
+        if (myClass == ClassName.Fighter)
+        {
+            if (GetComponent<Fighter>().raging)
+            {
+                launchStrength = GetComponent<Fighter>().rageLaunchStrength;
+            }
+            else
+            {
+                launchStrength = GetComponent<Fighter>().baseLaunchStrength;
+            }
+        }
     }
 
 
@@ -59,6 +75,7 @@ public class PlayerController : Character {
 
 	public void GetStartPosition(){
 		if (myState == CharacterState.Idle && isMyTurn) {
+            shotGuide.SetActive(false);
 			//print ("starting drag");
 			if (!inPlay && isMyTurn) {
 				//print ("Player's turn");
@@ -114,6 +131,7 @@ public class PlayerController : Character {
 				}
 				myState = CharacterState.Launched;
                 attackStrength = GetAttackStrength();
+                
 
             }
         }
